@@ -100,6 +100,26 @@
                 }
               }
             }
+          },
+          "CPromeModule": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.CPromeModule}",
+              "createOptions": {}
+            }
+          },
+          "nodePromeModule": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.nodePromeModule}",
+              "createOptions": {}
+            }
           }
         }
       }
@@ -107,7 +127,10 @@
     "$edgeHub": {
       "properties.desired": {
         "schemaVersion": "1.1",
-        "routes": {},
+        "routes": {
+          "CPromeModuleToIoTHub": "FROM /messages/modules/CPromeModule/outputs/* INTO $upstream",
+          "nodePromeModuleToIoTHub": "FROM /messages/modules/nodePromeModule/outputs/* INTO $upstream"
+        },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
         }

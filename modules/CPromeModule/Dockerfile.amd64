@@ -1,0 +1,55 @@
+FROM ubuntu:bionic AS base
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends software-properties-common && \
+    add-apt-repository -y ppa:aziotsdklinux/ppa-azureiot && \
+    apt-get update && \
+    apt-get install -y azure-iot-sdk-c-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+FROM base AS build-env
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends cmake gcc g++ make && \
+    apt-get install -y git && \
+    apt-get install wget -y && \
+    apt-get install gnupg -y && \
+    apt-get install apt-transport-https -y && \
+    apt-get install ca-certificates -y && \  
+    apt-get install software-properties-common -y && \
+    rm -rf /var/lib/apt/lists/* 
+
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | apt-key add -
+RUN apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+RUN apt-get update
+RUN apt-get install cmake -y
+
+
+# PROMETHEUS ->
+RUN git clone https://github.com/jupp0r/prometheus-cpp.git
+WORKDIR /prometheus-cpp
+RUN git submodule init
+RUN git submodule update
+
+RUN mkdir /prometheus-cpp/_build
+WORKDIR /prometheus-cpp/_build
+
+# run cmake
+RUN cmake .. -DBUILD_SHARED_LIBS=ON -DENABLE_PUSH=OFF -DENABLE_COMPRESSION=OFF
+# build
+RUN cmake --build . --parallel 4
+# run tests
+RUN ctest -V
+# install the libraries and headers
+RUN cmake --install .
+
+## <- PROMETHEUS
+WORKDIR /app
+COPY . ./
+RUN cmake . 
+RUN make
+
+FROM base
+WORKDIR /app
+COPY --from=build-env /app ./
+RUN useradd -ms /bin/bash moduleuser
+USER moduleuser
+CMD ["./main"]
