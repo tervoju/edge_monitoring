@@ -7,7 +7,13 @@
 #include <cstdlib>
 #include <memory>
 #include <string>
-#include <pthread.h>
+#include <thread>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+using namespace prometheus;
 
 void* prome(void *arg)
 {
@@ -15,8 +21,8 @@ void* prome(void *arg)
     // detach the current thread
     // from the calling thread
     pthread_detach(pthread_self());
-    // create an http server running on port 8080
-    auto exposer = Exposer{"127.0.0.1:8080"};
+    // create an http server running on port 9064
+    Exposer exposer{"127.0.0.1:9064"};
 
     // create a metrics registry with component=main labels applied to all its
     // metrics
@@ -47,3 +53,7 @@ void* prome(void *arg)
     pthread_exit(NULL);
     return 0;
 }
+
+#ifdef __cplusplus
+}
+#endif

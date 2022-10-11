@@ -32,12 +32,12 @@ set(headers
 
 set(main_c_files
     ./main.c
-    ./prome.cpp
+)
+set(cpp_files
+  ./prome.cpp
 )
 
-find_package(prometheus-cpp REQUIRED)
-
-add_executable(main ${main_c_files} ${headers})
+add_executable(main ${main_c_files} ${cpp_files} ${headers})
 
 target_link_libraries(main
     iothub_client_mqtt_transport
@@ -54,6 +54,4 @@ target_link_libraries(main
     crypto
     m
     uuid
-    prometheus-cpp-core
-    prometheus-cpp-pull
 )
