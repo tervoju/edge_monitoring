@@ -16,7 +16,7 @@
 #include "time.h"
 
 #include <pthread.h>
-#include "prome.h"
+//#include "prome.h"
 
 typedef struct MESSAGE_INSTANCE_TAG
 {

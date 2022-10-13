@@ -1,3 +1,4 @@
+#include "prome.h"
 #include <prometheus/counter.h>
 #include <prometheus/exposer.h>
 #include <prometheus/registry.h>
@@ -8,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <iostream>
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,40 +20,48 @@ using namespace prometheus;
 void* prome(void *arg)
 {
 
-    // detach the current thread
-    // from the calling thread
-    pthread_detach(pthread_self());
-    // create an http server running on port 9064
-    Exposer exposer{"127.0.0.1:9064"};
+ using namespace prometheus;
 
-    // create a metrics registry with component=main labels applied to all its
-    // metrics
-    auto registry = std::make_shared<Registry>();
+  // create an http server running on port 8080
+  Exposer exposer{"0.0.0.0:9064", 1};
 
-    // add a new counter family to the registry (families combine values with the
-    // same name, but distinct label dimenstions)
-    auto &counter_family = BuildCounter()
-                               .Name("time_running_seconds")
-                               .Help("How many seconds is this server running?")
-                               .Labels({{"label", "value"}})
-                               .Register(*registry);
+  auto registryA = std::make_shared<Registry>();
 
-    // add a counter to the metric family
-    auto &second_counter = counter_family.Add(
-        {{"another_label", "value"}, {"yet_another_label", "value"}});
+  // add a new counter family to the registry (families combine values with the
+  // same name, but distinct label dimensions)
+  auto& counter_familyA = BuildCounter()
+                              .Name("time_running_seconds_total")
+                              .Help("How many seconds is this server running?")
+                              .Register(*registryA);
 
-    // ask the exposer to scrape the registry on incoming scrapes
-    exposer.RegisterCollectable(registry);
+  // add a counter to the metric family
+  auto& seconds_counterA = counter_familyA.Add(
+      {{"another_label", "bar"}, {"yet_another_label", "baz"}});
 
-    for (;;)
-    {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        // increment the counter by one (second)
-        second_counter.Increment();
-    }
-    // exit the current thread
-    pthread_exit(NULL);
-    return 0;
+  // ask the exposer to scrape registryA on incoming scrapes for "/metricsA"
+  exposer.RegisterCollectable(registryA, "/metricsA");
+
+  auto registryB = std::make_shared<Registry>();
+
+  auto& counter_familyB =
+      BuildCounter()
+          .Name("other_time_running_seconds_total")
+          .Help("How many seconds has something else been running?")
+          .Register(*registryB);
+
+  auto& seconds_counterB = counter_familyB.Add(
+      {{"another_label", "not_bar"}, {"yet_another_label", "not_baz"}});
+
+  // This endpoint exposes registryB.
+  exposer.RegisterCollectable(registryB, "/metricsB");
+
+  for (;;) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    // increment the counters by one (second)
+    std::cout << "loop in prome" << std::endl;
+    seconds_counterA.Increment(1.0);
+    seconds_counterB.Increment(1.5);
+  }
 }
 
 #ifdef __cplusplus

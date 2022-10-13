@@ -108,17 +108,20 @@
             "restartPolicy": "always",
             "settings": {
               "image": "${MODULES.CPromeModule}",
-              "createOptions": {}
-            }
-          },
-          "nodePromeModule": {
-            "version": "1.0",
-            "type": "docker",
-            "status": "running",
-            "restartPolicy": "always",
-            "settings": {
-              "image": "${MODULES.nodePromeModule}",
-              "createOptions": {}
+              "createOptions": {
+                "ExposedPorts": {
+                  "9600/tcp": {}
+                },
+                "HostConfig": {
+                  "PortBindings": {
+                    "9600/tcp": [
+                      {
+                        "HostPort": "9604"
+                      }
+                    ]
+                  }
+                }
+              }
             }
           }
         }
@@ -128,8 +131,7 @@
       "properties.desired": {
         "schemaVersion": "1.1",
         "routes": {
-          "CPromeModuleToIoTHub": "FROM /messages/modules/CPromeModule/outputs/* INTO $upstream",
-          "nodePromeModuleToIoTHub": "FROM /messages/modules/nodePromeModule/outputs/* INTO $upstream"
+          "CPromeModuleToIoTHub": "FROM /messages/modules/CPromeModule/outputs/* INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200

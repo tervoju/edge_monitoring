@@ -35,7 +35,7 @@ set(main_c_files
     ./prome.cpp
 )
 
-find_package(prometheus-cpp REQUIRED)
+#find_package(prometheus-cpp REQUIRED)
 
 add_executable(main ${main_c_files} ${headers})
 
