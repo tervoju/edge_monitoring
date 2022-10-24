@@ -1,0 +1,41 @@
+defaults:
+  # Use custom logging instead of Hydra detauls
+  - override hydra/job_logging: custom
+  - _self_
+
+input:
+  # Configure IP address through env variable if it exists
+  # see https://omegaconf.readthedocs.io/en/2.2_branch/custom_resolvers.html#oc-env
+  ip_address: ${oc.env:BASLER_IP_ADDRESS,192.168.1.254}
+  # Camera settings (Basler psf file)
+  settings_file: ${oc.env:BASLER_SETTINGS_FILE,./configs/emulator.pfs}
+  # Use emulator?
+  use_emulator: ${oc.env:BASLER_USE_EMULATOR,True}
+  # Limit max number of frames? Use null to disable
+  # TODO: the resolver seems to convert this to a string if pass through env variable...
+  max_frames: ${oc.env:BASLER_MAX_FRAMES,null}
+
+output:
+  # Where to store captured images?
+  # Format is <directory>/<timestamp>.png
+  path: outputs/OCR_captures
+  # How often to store images?
+  # Values given as timedelta string, e.g., 5s --> 5 seconds, 1h30m -> 1 hour 30 mins.
+  frequency: 0.5s
+
+motion:
+  preprocessor:
+    - _target_: torchvision.transforms.Resize
+      size: 400 # As tuple..
+    - _target_: torchvision.transforms.Grayscale
+    - _target_: torchvision.transforms.GaussianBlur
+      kernel_size: 21
+  pixel_threshold: 50
+  area_threshold: 0.05
+  background_file: ./data/background.png
+
+# Hydra configuration
+hydra:
+  output_subdir: null
+  run:
+    dir: .

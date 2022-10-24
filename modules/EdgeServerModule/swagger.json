@@ -1,0 +1,188 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "VQC3D Edge  Configurations",
+        "description": "Module configurations",
+        "license": {
+            "name": "",
+            "url": ""
+        }
+    },
+    "host": "127.0.0.1:3000",
+    "basePath": "/",
+    "tags": [
+        {
+            "name": "Configurations",
+            "description": "API for modules"
+        }
+    ],
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    
+        "paths": {
+            "/configs": {
+                "get": {
+                    "tags": [
+                        "configs"
+                    ],
+                    "summary": "Get all configurations in system",
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "schema": {
+                                "$ref": "#/configs"
+                            }
+                        }
+                    }
+                }
+            },
+            "/config/ocr":{
+                "get":{
+                    "tags":["ocr"],
+                    "summary": "Get OCR yaml configuration",
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "schema": {
+                                "$ref": "#/config/ocr"
+                            }
+                        }
+                    }
+                },
+                "post":{
+                    "tags":["ocr"],
+                    "summary": "new pointcloud yaml configuration",
+                    "consumes": "multipart/form-data",
+                    "parameters":[
+                        {
+                        "in": "formData",
+                        "name": "upfile",
+                        "type": "file",
+                        "description": "Module configuration file to be stored"
+                        }
+                    ],
+                    "produces":["application/json"],
+                    "responses": {
+                        "200": {
+                            "description": "The following file was uploaded successfully",
+                            "schema": {
+                                "$ref": "#/config/ocr"
+                            }
+                        }
+                    }
+                }
+            },
+            "/config/pc":{
+                "get":{
+                    "tags":["pc"],
+                    "summary": "Get pointcloud yaml configuration",
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "schema": {
+                                "$ref": "#/config/pc"
+                            }
+                        }
+                    }
+                },
+        
+                "post":{
+                    "tags":["pc"],
+                    "summary": "new pointcloud yaml configuration",
+                    "consumes": "multipart/form-data",
+                    "parameters":[
+                        {
+                        "in": "formData",
+                        "name": "upfile",
+                        "type": "file",
+                        "description": "Module configuration file to be stored"
+                        }
+                    ],
+                    "produces":["application/json"],
+                    "responses": {
+                        "200": {
+                            "description": "The following file was uploaded successfully",
+                            "schema": {
+                                "$ref": "#/config/pc"
+                            }
+                        }
+                    }
+                }
+            },
+            "/config/{configname}":{
+                "get":{
+                    "tags":["any config"],
+                    "summary": "Get {configname} yaml configuration",
+                    "parameters":[
+                        {
+                        "name":"Configuration", 
+                        "in": "body",
+                        "description": "Module configuration file to be stored",
+                        "schema": {
+                            "$ref": "#/config/{configname}"
+                          }
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "schema": {
+                                "$ref": "#/config/{configname}"
+                            }
+                        }
+                    }
+                },
+        
+                "post":{
+                    "tags":["any config"],
+                    "summary": "new pointcloud yaml configuration",
+                    "parameters":[
+                        {
+                        "name":"Configuration", 
+                        "in": "body",
+                        "description": "Module configuration file to be stored",
+                        "schema": {
+                            "$ref": "#/config/{configname}"
+                          }
+                        }
+                    ],
+                    "produces":["application/json"],
+                    "responses": {
+                        "200": {
+                            "description": "The following file was uploaded successfully",
+                            "schema": {
+                                "$ref": "#/config/pc"
+                            }
+                        }
+                    }
+                }
+            }
+
+
+        },
+        "definitions": {
+            "config": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "configs": {
+                "type": "json",
+                "$ref": "#/configs"
+            }
+        }
+    
+}

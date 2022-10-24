@@ -1,0 +1,33 @@
+# Common configuration for the application processes
+ALL_CAMERAS: [0, 1, 2, 3]
+TOP_CAMERAS: [0, 1]
+BOTTOM_CAMERAS: [2, 3]
+NCAMERAS: 4
+NBUFFERS: 128
+CAPTURE_DIR: "/dev/shm"
+CAPTURE_PREFIX: "slice"
+GOLDEN_DIR: "./data/golden"
+GOLDEN_PREFIX: "golden"
+MONITORING_SAMPLE_PREFIX: "monitoring_sample"
+
+POINTCLOUD_SHAPE: [896000, 3] # 1120 x 800
+POINTCLOUD_DTYPE: "float32"
+POINTCLOUD_OFFSET: 189 # Pointcloud data offset in bytes (in case of header)
+
+# Tolerances (allowed maximum per-statistic deviance) for calibration monitoring
+TOLERANCES:
+    mean_abs: 0.5
+    max_abs: 1.0
+    mean_dist: 1.0
+    max_dist: 3.0
+
+# Tolerances for vapor pocket detections
+POCKET_TOLERANCES:
+    height: 5.0
+    area: 25.0
+
+# IPC configuration to printer control
+PRINTER_FIFO:
+    enabled: true
+    path: "/dev/shm/printer-fifo"
+    format: "Bfffff" # Pocket info struct format: product id (unsigned char), center x, center y, length, width, thickness (float)

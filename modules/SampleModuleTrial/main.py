@@ -8,26 +8,10 @@ import signal
 import threading
 from azure.iot.device.aio import IoTHubModuleClient
 
-import os
-import uuid
-import random
-from prometheus_client import  start_http_server, Gauge
-
-# prometheus metrics variables 
-deviceId = os.environ["IOTEDGE_DEVICEID"]
-instanceNumber = str(uuid.uuid4())
-iothubHostname = os.environ["IOTEDGE_IOTHUBHOSTNAME"]
-moduleId = os.environ["IOTEDGE_MODULEID"]
-
-# demo
-def get_cpu_temp():
-    tempFile = open( "/sys/class/thermal/thermal_zone0/temp" )
-    cpu_temp = tempFile.read()
-    tempFile.close()
-    return float(float(cpu_temp)/1000.0)
 
 # Event indicating client stop
 stop_event = threading.Event()
+
 
 def create_client():
     client = IoTHubModuleClient.create_from_edge_environment()
@@ -54,20 +38,13 @@ def create_client():
 
     return client
 
+
 async def run_sample(client):
     # Customize this coroutine to do whatever tasks the module initiates
     # e.g. sending messages
-   # Customize this coroutine to do whatever tasks the module initiates
-    global deviceId, instanceNumber, iothubHostname, moduleId
-
-    tempGauge = Gauge("temperature", "device temperature", ["deviceId", "instanceNumber", "iothubHostname", "moduleId"])
-
-    # Start up the server to expose the metrics.
-    start_http_server(9600)
-    # e.g. sending messages
     while True:
-        tempGauge.labels(deviceId, instanceNumber, iothubHostname, moduleId).set(get_cpu_temp())
-        await asyncio.sleep(10)
+        await asyncio.sleep(1000)
+
 
 def main():
     if not sys.version >= "3.5.3":
@@ -96,6 +73,7 @@ def main():
         print("Shutting down IoT Hub Client...")
         loop.run_until_complete(client.shutdown())
         loop.close()
+
 
 if __name__ == "__main__":
     main()

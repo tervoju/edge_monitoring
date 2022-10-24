@@ -1,0 +1,31 @@
+{
+  "name": "edge-server",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "start-dev": "nodemon --trace-warnings ./bin/www",
+    "test": "mocha --timeout 10000"
+  },
+  "dependencies": {
+    "azure-iot-device": "^1.17.4",
+    "azure-iot-device-mqtt": "^1.15.4",
+    "cookie-parser": "~1.4.4",
+    "dateformat": "^5.0.3",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "^0.31.2",
+    "jstransformer": "^1.0.0",
+    "morgan": "~1.9.1",
+    "multer": "^1.4.5-lts.1",
+    "swagger-jsdoc": "^6.2.5",
+    "swagger-ui-express": "^4.5.0",
+    "uglify-js": "^3.17.4"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "chai-http": "^4.3.0",
+    "mocha": "^10.0.0"
+  }
+}

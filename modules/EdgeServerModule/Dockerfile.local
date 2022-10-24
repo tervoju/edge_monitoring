@@ -1,0 +1,18 @@
+FROM node:12-alpine 
+
+RUN mkdir /home/node/app/ && chown -R node:node /home/node/app
+
+WORKDIR /home/node/app
+
+COPY --chown=node:node package*.json ./
+
+ENV PORT=3000
+EXPOSE $PORT
+
+COPY ./package.json ./
+COPY ./package-lock.json ./
+COPY . .
+
+RUN npm install && npm cache clean --force
+
+CMD node --trace-warnings ./bin/www
