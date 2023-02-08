@@ -9,7 +9,13 @@
           "settings": {
             "minDockerVersion": "v1.25",
             "loggingOptions": "",
-            "registryCredentials": {}
+            "registryCredentials": {
+              "siloiot": {
+                "username": "$CONTAINER_REGISTRY_USERNAME_siloiot",
+                "password": "$CONTAINER_REGISTRY_PASSWORD_siloiot",
+                "address": "siloiot.azurecr.io"
+              }
+            }
           }
         },
         "systemModules": {
@@ -78,8 +84,86 @@
               "image": "hub.docker.com/prometheus/prometheus:latest",
               "createOptions": "{\"ExposedPorts\":{\"9090/tcp\":{}},\"HostConfig\":{\"PortBindings\":{\"9090/tcp\":[{\"HostPort\":\"9090\"}]}}}"
             }
+          },
+          "directMessageReceiverModule": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.directMessageReceiverModule.debug}",
+              "createOptions": {
+                "ExposedPorts": {
+                  "5678/tcp": {}
+                },
+                "HostConfig": {
+                  "PortBindings": {
+                    "5678/tcp": [
+                      {
+                        "HostPort": "5678"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "directMessageSenderModule": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.directMessageSenderModule.debug}",
+              "createOptions": {
+                "ExposedPorts": {
+                  "5678/tcp": {}
+                },
+                "HostConfig": {
+                  "PortBindings": {
+                    "5678/tcp": [
+                      {
+                        "HostPort": "5678"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "SharpSenderModule": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.SharpSenderModule.debug}",
+              "createOptions": {}
+            }
+          },
+          "dmModule": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.dmModule.debug}",
+              "createOptions": {
+                "ExposedPorts": {
+                  "5678/tcp": {}
+                },
+                "HostConfig": {
+                  "PortBindings": {
+                    "5678/tcp": [
+                      {
+                        "HostPort": "5678"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           }
-
         }
       }
     },
@@ -87,7 +171,11 @@
       "properties.desired": {
         "schemaVersion": "1.1",
         "routes": {
-          "SampleModuleToIoTHub": "FROM /messages/modules/SampleModule/outputs/* INTO $upstream"
+          "SampleModuleToIoTHub": "FROM /messages/modules/SampleModule/outputs/* INTO $upstream",
+          "directMessageReceiverModuleToIoTHub": "FROM /messages/modules/directMessageReceiverModule/outputs/* INTO $upstream",
+          "directMessageSenderModuleToIoTHub": "FROM /messages/modules/directMessageSenderModule/outputs/* INTO $upstream",
+          "SharpSenderModuleToIoTHub": "FROM /messages/modules/SharpSenderModule/outputs/* INTO $upstream",
+          "dmModuleToIoTHub": "FROM /messages/modules/dmModule/outputs/* INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200

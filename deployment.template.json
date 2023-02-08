@@ -9,14 +9,20 @@
           "settings": {
             "minDockerVersion": "v1.25",
             "loggingOptions": "",
-            "registryCredentials": {}
+            "registryCredentials": {
+              "siloiot": {
+                "username": "$CONTAINER_REGISTRY_USERNAME_siloiot",
+                "password": "$CONTAINER_REGISTRY_PASSWORD_siloiot",
+                "address": "siloiot.azurecr.io"
+              }
+            }
           }
         },
         "systemModules": {
           "edgeAgent": {
             "type": "docker",
             "settings": {
-              "image": "mcr.microsoft.com/azureiotedge-agent:1.2",
+              "image": "mcr.microsoft.com/azureiotedge-agent:1.4",
               "createOptions": {}
             }
           },
@@ -25,7 +31,7 @@
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "mcr.microsoft.com/azureiotedge-hub:1.2",
+              "image": "mcr.microsoft.com/azureiotedge-hub:1.4",
               "createOptions": {
                 "HostConfig": {
                   "PortBindings": {
@@ -50,13 +56,66 @@
             }
           }
         },
-        "modules": {}
+        "modules": {
+          "directMessageReceiverModule": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.directMessageReceiverModule}",
+              "createOptions": {
+                "NetworkingConfig": {
+                  "EndpointsConfig": {
+                    "host": {}
+                  }
+                },
+                "HostConfig": {
+                  "NetworkMode": "host"
+                }
+              }
+            }
+          },
+          "directMessageSenderModule": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.directMessageSenderModule}",
+              "createOptions": {
+                "NetworkingConfig": {
+                  "EndpointsConfig": {
+                    "host": {}
+                  }
+                },
+                "HostConfig": {
+                  "NetworkMode": "host"
+                }
+              }
+            }
+          },
+          "dmModule": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.dmModule}",
+              "createOptions": {}
+            }
+          }
+        }
       }
     },
     "$edgeHub": {
       "properties.desired": {
         "schemaVersion": "1.1",
-        "routes": {},
+        "routes": {
+          "directMessageReceiverModuleToIoTHub": "FROM /messages/modules/directMessageReceiverModule/outputs/* INTO $upstream",
+          "directMessageSenderModuleToIoTHub": "FROM /messages/modules/directMessageSenderModule/outputs/* INTO $upstream",
+          "SenderModuleToReceiverModule": "FROM /messages/modules/directMessageSenderModule/* INTO BrokeredEndpoint(\"/modules/directMessageReceiverModule/inputs/control\")"
+        },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
         }
