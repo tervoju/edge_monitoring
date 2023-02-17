@@ -12,13 +12,13 @@ import json
 import os
 from azure.iot.device.aio import IoTHubModuleClient
 from azure.iot.device import MethodResponse
-
+from azure.iot.device import Message
 
 # Event indicating client stop
 stop_event = threading.Event()
 device_id = os.environ["IOTEDGE_DEVICEID"]
 
-async def send_message_to_receiver(client):
+async def send_method_to_receiver(client):
     global device_id
     test_method_params = {
         "methodName": "get_data",
@@ -28,13 +28,21 @@ async def send_message_to_receiver(client):
     }
 
     try:
-        logging.info("{} : {} : {} : {}".format("Sending message to module from module ", os.environ["IOTEDGE_DEVICEID"], "dmModule", os.environ["IOTEDGE_MODULEID"]))
-        response = await client.invoke_method(device_id="ubuntu_thinkpad_02_symmetric", module_id="dmModule", method_params=test_method_params)
+        logging.info("{} : {} : {} : {}".format("Sending method to module from module ", os.environ["IOTEDGE_DEVICEID"], os.environ["IOTEDGE_MODULEID"], "directMessageReceiverModule"))
+        response = await client.invoke_method(device_id=device_id, module_id="directMessageReceiverModule", method_params=test_method_params)
         logging.info("Response status: %s" % response.status)
     except Exception as e:
         print("Unexpected error %s " % e)
 
-       
+async def send_message_to_receiver(client):
+    try:
+        logging.info("{} : {} : {}".format("Sending message to module from module ", os.environ["IOTEDGE_DEVICEID"], os.environ["IOTEDGE_MODULEID"]))
+        msg = {"data": "test"}
+        payload = Message(json.dumps(msg), content_encoding="utf-8", content_type="application/json")
+        await client.send_message_to_output(payload, "output1")
+    except Exception as e:
+        print("Unexpected error %s " % e)
+
 def create_client():
     client = IoTHubModuleClient.create_from_edge_environment()
 
@@ -65,6 +73,7 @@ async def run_sample(client):
     # Customize this coroutine to do whatever tasks the module initiates
     # e.g. sending messages
     while True:
+        await send_method_to_receiver(client)
         await send_message_to_receiver(client)
         await asyncio.sleep(10)
 

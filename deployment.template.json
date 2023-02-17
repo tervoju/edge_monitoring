@@ -94,16 +94,6 @@
                 }
               }
             }
-          },
-          "dmModule": {
-            "version": "1.0",
-            "type": "docker",
-            "status": "running",
-            "restartPolicy": "always",
-            "settings": {
-              "image": "${MODULES.dmModule}",
-              "createOptions": {}
-            }
           }
         }
       }
@@ -114,7 +104,7 @@
         "routes": {
           "directMessageReceiverModuleToIoTHub": "FROM /messages/modules/directMessageReceiverModule/outputs/* INTO $upstream",
           "directMessageSenderModuleToIoTHub": "FROM /messages/modules/directMessageSenderModule/outputs/* INTO $upstream",
-          "SenderModuleToReceiverModule": "FROM /messages/modules/directMessageSenderModule/* INTO BrokeredEndpoint(\"/modules/directMessageReceiverModule/inputs/control\")"
+          "SenderModuleToReceiverModule": "FROM /messages/modules/directMessageSenderModule/* INTO BrokeredEndpoint(\"/modules/directMessageReceiverModule/inputs\")"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
