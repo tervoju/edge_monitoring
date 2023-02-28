@@ -16,32 +16,38 @@ from azure.iot.device import Message
 
 # Event indicating client stop
 stop_event = threading.Event()
-device_id = os.environ["IOTEDGE_DEVICEID"]
+DEVICEID = os.environ["IOTEDGE_DEVICEID"]
 
+'''
+send a method to the receiver module
+'''
 async def send_method_to_receiver(client):
-    global device_id
+    global DEVICEID
     test_method_params = {
         "methodName": "get_data",
         "payload": "payload",
         "responseTimeoutInSeconds": 10,
         "connectTimeoutInSeconds": 10,
     }
-
     try:
-        logging.info("{} : {} : {} : {}".format("Sending method to module from module ", os.environ["IOTEDGE_DEVICEID"], os.environ["IOTEDGE_MODULEID"], "directMessageReceiverModule"))
-        response = await client.invoke_method(device_id=device_id, module_id="directMessageReceiverModule", method_params=test_method_params)
-        logging.info("Response status: %s" % response.status)
+        logging.info("Sending method to module from module %s %s %s", DEVICEID, os.environ["IOTEDGE_MODULEID"], "directMessageReceiverModule")
+        response = await client.invoke_method(device_id=DEVICEID, module_id="directMessageReceiverModule", method_params=test_method_params)
+        #logging.info("Response status: %s", response.status)
     except Exception as e:
         print("Unexpected error %s " % e)
 
+'''
+send a message to the receiver module via edge hub
+'''
 async def send_message_to_receiver(client):
+    global DEVICEID
     try:
-        logging.info("{} : {} : {}".format("Sending message to module from module ", os.environ["IOTEDGE_DEVICEID"], os.environ["IOTEDGE_MODULEID"]))
+        logging.info("Sending message to module from module %s %s", DEVICEID, os.environ["IOTEDGE_MODULEID"])
         msg = {"data": "test"}
         payload = Message(json.dumps(msg), content_encoding="utf-8", content_type="application/json")
         await client.send_message_to_output(payload, "output1")
     except Exception as e:
-        print("Unexpected error %s " % e)
+        logging.exception("Unexpected error: %s", e)
 
 def create_client():
     client = IoTHubModuleClient.create_from_edge_environment()
@@ -68,7 +74,9 @@ def create_client():
 
     return client
 
-
+'''
+sample loop for the edge module that is called when the module is run.
+'''
 async def run_sample(client):
     # Customize this coroutine to do whatever tasks the module initiates
     # e.g. sending messages
@@ -78,6 +86,9 @@ async def run_sample(client):
         await asyncio.sleep(10)
 
 
+'''
+main method that is called when the module is run.
+'''
 def main():
     if not sys.version >= "3.5.3":
         raise Exception( "The sample requires python 3.5.3+. Current version of Python: %s" % sys.version )
@@ -108,5 +119,5 @@ def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO,datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.DEBUG,datefmt='%Y-%m-%d %H:%M:%S')
     main()
