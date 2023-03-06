@@ -7,7 +7,6 @@ import sys
 import signal
 import threading
 import logging
-
 import os
 
 from azure.iot.device.aio import IoTHubModuleClient
@@ -26,7 +25,7 @@ def create_client():
     async def twin_patch_handler(patch):
         logging.info("the data in the desired properties patch was: {}".format(patch))
 
-    # DIRECT METHOD handling 
+    # DIRECT METHOD handling  
     # Define behavior for receiving direct messages
     async def direct_method_handler(method_request):
         global SENDING
@@ -34,7 +33,7 @@ def create_client():
         if method_request.name == "get_data":
             logging.info("{}: {}".format("Received request for get_data", method_request.payload))
             method_response = MethodResponse.create_from_method_request(
-                method_request, 200, "some data"
+                method_request, 200, "response data"
             )
             await client.send_method_response(method_response)
 

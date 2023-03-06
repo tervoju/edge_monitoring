@@ -3,7 +3,7 @@
   "modulesContent": {
     "$edgeAgent": {
       "properties.desired": {
-        "schemaVersion": "1.1",
+        "schemaVersion": "1.4",
         "runtime": {
           "type": "docker",
           "settings": {
@@ -102,7 +102,7 @@
     },
     "$edgeHub": {
       "properties.desired": {
-        "schemaVersion": "1.2",
+        "schemaVersion": "1.4",
         "routes": {
           "EdgeServerModuleToIoTHub": "FROM /messages/modules/EdgeServerModule/outputs/* INTO $upstream"
         },

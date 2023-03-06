@@ -57,41 +57,25 @@
           }
         },
         "modules": {
-          "directMessageReceiverModule": {
+          "receivermodule": {
             "version": "1.0",
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "${MODULES.directMessageReceiverModule}",
+              "image": "${MODULES.receivermodule}",
               "createOptions": {
-                "NetworkingConfig": {
-                  "EndpointsConfig": {
-                    "host": {}
-                  }
-                },
-                "HostConfig": {
-                  "NetworkMode": "host"
-                }
               }
             }
           },
-          "directMessageSenderModule": {
+          "sendermodule": {
             "version": "1.0",
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "${MODULES.directMessageSenderModule}",
+              "image": "${MODULES.sendermodule}",
               "createOptions": {
-                "NetworkingConfig": {
-                  "EndpointsConfig": {
-                    "host": {}
-                  }
-                },
-                "HostConfig": {
-                  "NetworkMode": "host"
-                }
               }
             }
           }
@@ -100,11 +84,11 @@
     },
     "$edgeHub": {
       "properties.desired": {
-        "schemaVersion": "1.1",
+        "schemaVersion": "1.2",
         "routes": {
-          "directMessageReceiverModuleToIoTHub": "FROM /messages/modules/directMessageReceiverModule/outputs/* INTO $upstream",
-          "directMessageSenderModuleToIoTHub": "FROM /messages/modules/directMessageSenderModule/outputs/* INTO $upstream",
-          "SenderModuleToReceiverModule": "FROM /messages/modules/directMessageSenderModule/outputs/output1 INTO BrokeredEndpoint(\"/modules/directMessageReceiverModule/inputs/input1\")"
+          "receiverModuleToIoTHub": "FROM /messages/modules/receivermodule/outputs/* INTO $upstream",
+          "senderModuleToIoTHub": "FROM /messages/modules/sendermodule/outputs/* INTO $upstream",
+          "SenderModuleToReceiverModule": "FROM /messages/modules/sendermodule/outputs/output1 INTO BrokeredEndpoint(\"/modules/receivermodule/inputs/input1\")"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200

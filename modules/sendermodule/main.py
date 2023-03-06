@@ -25,20 +25,23 @@ async def send_method_to_receiver(client):
     global DEVICEID
     test_method_params = {
         "methodName": "get_data",
-        "payload": "payload",
-        "responseTimeoutInSeconds": 10,
+        "payload": {"get_data":"this data"},
+        "responseTimeoutInSeconds": 100,
         "connectTimeoutInSeconds": 10,
     }
     try:
-        logging.info("Sending method to module from module %s %s %s", DEVICEID, os.environ["IOTEDGE_MODULEID"], "directMessageReceiverModule")
-        response = await client.invoke_method(device_id=DEVICEID, module_id="directMessageReceiverModule", method_params=test_method_params)
+        logging.info("Sending method to module from module %s %s %s", DEVICEID, os.environ["IOTEDGE_MODULEID"], "receiverModule")
+        response = await client.invoke_method(
+            device_id="ubuntu_thinkpad_02_symmetric", module_id = "receivermodule", method_params=test_method_params
+        )
+        print("Method Response: {}".format(response))
         #logging.info("Response status: %s", response.status)
     except Exception as e:
         print("Unexpected error %s " % e)
 
-'''
-send a message to the receiver module via edge hub
-'''
+
+# send a message to the receiver module via edge hub
+
 async def send_message_to_receiver(client):
     global DEVICEID
     try:
@@ -66,17 +69,13 @@ def create_client():
     try:
         # Set handler on the client
         client.on_message_received = receive_message_handler
-
     except:
         # Cleanup if failure occurs
         client.shutdown()
         raise
-
     return client
 
-'''
-sample loop for the edge module that is called when the module is run.
-'''
+
 async def run_sample(client):
     # Customize this coroutine to do whatever tasks the module initiates
     # e.g. sending messages
@@ -85,10 +84,6 @@ async def run_sample(client):
         await send_message_to_receiver(client)
         await asyncio.sleep(10)
 
-
-'''
-main method that is called when the module is run.
-'''
 def main():
     if not sys.version >= "3.5.3":
         raise Exception( "The sample requires python 3.5.3+. Current version of Python: %s" % sys.version )
