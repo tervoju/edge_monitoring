@@ -26,12 +26,15 @@ print(data.decode("utf-8"))
 
 import requests
 import json
+import logging
 
-url = "https://iothubvqc01.azure-devices.net/twins/ubuntu_thinkpad_02_symmetric/modules/receivermodule/methods?api-version=2021-04-12"
+logging.basicConfig(level=logging.DEBUG)
+
+url = "https://iothubvqc01.azure-devices.net/twins/thinkpadp51/modules/receivermodule/methods?api-version=2021-04-12"
 
 payload = "{\r\n    \"methodName\": \"get_data\",\r\n    \"responseTimeoutInSeconds\": 200,\r\n    \"payload\": {\r\n        \"input1\": \"someInput\",\r\n        \"input2\": \"anotherInput\"\r\n    }"
 headers = {
-  'Authorization': "SharedAccessSignature sr=iothubvqc01.azure-devices.net&sig=AuDMHGvvAM4%2FSh0pVFofAliWHRYgi%2F38utYDfDwE11E%3D&se=1678091442&skn=iothubowner",
+  'Authorization': "SharedAccessSignature sr=iothubvqc01.azure-devices.net&sig=Hnrl%2Fb280ZnHuEHq%2BF1UQocMH9XpUyGdu%2BYrmXtA5JM%3D&se=1679487478&skn=iothubowner",
   'Content-Type': 'application/json'
 }
 

@@ -19,7 +19,7 @@ stop_event = threading.Event()
 def create_client():
     client = IoTHubModuleClient.create_from_edge_environment()
 
-    logging.info("{} : {} : {}".format("ReceiverModule --------->", os.environ["IOTEDGE_DEVICEID"], os.environ["IOTEDGE_MODULEID"]))
+    logging.info("{} : {} : {}".format("receivermodule --------->", os.environ["IOTEDGE_DEVICEID"], os.environ["IOTEDGE_MODULEID"]))
 
     # digital twin
     async def twin_patch_handler(patch):

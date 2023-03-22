@@ -65,6 +65,14 @@
             "settings": {
               "image": "${MODULES.receivermodule}",
               "createOptions": {
+                "NetworkingConfig": {
+                  "EndpointsConfig": {
+                    "host": {}
+                  }
+                },
+                "HostConfig": {
+                  "NetworkMode": "host"
+                }
               }
             }
           },
@@ -76,6 +84,14 @@
             "settings": {
               "image": "${MODULES.sendermodule}",
               "createOptions": {
+                "NetworkingConfig": {
+                  "EndpointsConfig": {
+                    "host": {}
+                  }
+                },
+                "HostConfig": {
+                  "NetworkMode": "host"
+                }
               }
             }
           }
@@ -88,7 +104,7 @@
         "routes": {
           "receiverModuleToIoTHub": "FROM /messages/modules/receivermodule/outputs/* INTO $upstream",
           "senderModuleToIoTHub": "FROM /messages/modules/sendermodule/outputs/* INTO $upstream",
-          "SenderModuleToReceiverModule": "FROM /messages/modules/sendermodule/outputs/output1 INTO BrokeredEndpoint(\"/modules/receivermodule/inputs/input1\")"
+          "senderModuleToReceiverModule": "FROM /messages/modules/sendermodule/outputs/output1 INTO BrokeredEndpoint(\"/modules/receivermodule/inputs/input1\")"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200

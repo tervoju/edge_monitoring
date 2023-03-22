@@ -7,11 +7,11 @@ import sys
 import signal
 import threading
 import logging
-import requests
+#import requests
 import json
 import os
 from azure.iot.device.aio import IoTHubModuleClient
-from azure.iot.device import MethodResponse
+#from azure.iot.device import MethodResponse
 from azure.iot.device import Message
 
 # Event indicating client stop
@@ -19,20 +19,20 @@ stop_event = threading.Event()
 DEVICEID = os.environ["IOTEDGE_DEVICEID"]
 
 '''
-send a method to the receiver module
+send a method to the receiver module 
 '''
 async def send_method_to_receiver(client):
     global DEVICEID
     test_method_params = {
         "methodName": "get_data",
         "payload": {"get_data":"this data"},
-        "responseTimeoutInSeconds": 100,
-        "connectTimeoutInSeconds": 10,
+        "responseTimeoutInSeconds": 5,
+        "connectTimeoutInSeconds": 2,
     }
     try:
-        logging.info("Sending method to module from module %s %s %s", DEVICEID, os.environ["IOTEDGE_MODULEID"], "receiverModule")
+        logging.info("Sending method to module from module %s %s %s ------------->", DEVICEID, os.environ["IOTEDGE_MODULEID"], "receivermodule")
         response = await client.invoke_method(
-            device_id="ubuntu_thinkpad_02_symmetric", module_id = "receivermodule", method_params=test_method_params
+            device_id="thinkpadp51", module_id = "receivermodule", method_params=test_method_params
         )
         print("Method Response: {}".format(response))
         #logging.info("Response status: %s", response.status)
@@ -41,7 +41,6 @@ async def send_method_to_receiver(client):
 
 
 # send a message to the receiver module via edge hub
-
 async def send_message_to_receiver(client):
     global DEVICEID
     try:
