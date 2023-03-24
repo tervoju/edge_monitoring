@@ -13,6 +13,7 @@ import os
 from azure.iot.device.aio import IoTHubModuleClient
 #from azure.iot.device import MethodResponse
 from azure.iot.device import Message
+from datetime import datetime
 
 # Event indicating client stop
 stop_event = threading.Event()
@@ -30,12 +31,15 @@ async def send_method_to_receiver(client):
         "connectTimeoutInSeconds": 2,
     }
     try:
-        logging.info("Sending method to module from module %s %s %s ------------->", DEVICEID, os.environ["IOTEDGE_MODULEID"], "receivermodule")
+        #logging.info("Sending method to module from module %s %s %s ------------->", DEVICEID, os.environ["IOTEDGE_MODULEID"], "receivermodule")
+        start_time = datetime.now()
         response = await client.invoke_method(
-            device_id="thinkpadp51", module_id = "receivermodule", method_params=test_method_params
+            device_id=DEVICEID, module_id = "receivermodule", method_params=test_method_params
         )
-        print("Method Response: {}".format(response))
-        #logging.info("Response status: %s", response.status)
+        end_time = datetime.now()
+        #print("Method Response: {}".format(response))
+        time_difference = (end_time - start_time).total_seconds() * 10**3
+        logging.info("{} : {} : {}".format("direct method round trip time ", time_difference, "ms"))
     except Exception as e:
         print("Unexpected error %s " % e)
 
@@ -59,7 +63,7 @@ def create_client():
         # NOTE: This function only handles messages sent to "input1".
         # Messages sent to other inputs, or to the default, will be discarded
         if message.input_name == "input1":
-            print("the data in the message received on input1 was ")
+            logging.info("".format("the data in the message received on input1 was "))
             print(message.data)
             print("custom properties are")
             print(message.custom_properties)
@@ -113,5 +117,5 @@ def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.DEBUG,datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO,datefmt='%Y-%m-%d %H:%M:%S')
     main()
