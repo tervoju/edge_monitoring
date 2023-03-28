@@ -62,6 +62,7 @@
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
+            "env-file": "./modules/receivermodule/receivermodule.env",
             "settings": {
               "image": "${MODULES.receivermodule}",
               "createOptions": {}
@@ -72,6 +73,10 @@
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
+            "env":{
+              "RANDOM_ENV": {
+              "value": true
+            }}, 
             "settings": {
               "image": "${MODULES.sendermodule}",
               "createOptions": {}

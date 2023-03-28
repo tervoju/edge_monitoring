@@ -18,7 +18,6 @@ stop_event = threading.Event()
  # create client that supports module twin and direct methods
 def create_client():
     client = IoTHubModuleClient.create_from_edge_environment()
-
     logging.info("{} : {} : {}".format("receivermodule --------->", os.environ["IOTEDGE_DEVICEID"], os.environ["IOTEDGE_MODULEID"]))
 
     # digital twin
@@ -72,16 +71,12 @@ def create_client():
             logging.info("forwarding mesage to output1")
             await client.send_message_to_output(message, "output1")
 
-    
     # Set handler on the client
     client.on_message_received = receive_message_handler
     # Set handler for direct methods
     client.on_method_request_received = direct_method_handler
-
     client.on_twin_desired_properties_patch_received = twin_patch_handler
-
     return client
-
 
 async def run_sample(client):
     # Customize this coroutine to do whatever tasks the module initiates
@@ -89,7 +84,6 @@ async def run_sample(client):
     await client.connect()
     while not stop_event.is_set():
         await asyncio.sleep(1)
-
 
 def main():
     if not sys.version >= "3.5.3":
@@ -118,7 +112,6 @@ def main():
         print("Shutting down IoT Hub Client...")
         loop.run_until_complete(client.shutdown())
         loop.close()
-
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

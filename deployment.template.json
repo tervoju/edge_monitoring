@@ -11,9 +11,9 @@
             "loggingOptions": "",
             "registryCredentials": {
               "siloiot": {
-                "username": "$CONTAINER_REGISTRY_USERNAME_siloiot",
-                "password": "$CONTAINER_REGISTRY_PASSWORD_siloiot",
-                "address": "siloiot.azurecr.io"
+                "username": "$CONTAINER_REGISTRY_USERNAME",
+                "password": "$CONTAINER_REGISTRY_PASSWORD",
+                "address": "$CONTAINER_REGISTRY_ADDRESS"
               }
             }
           }
@@ -62,6 +62,7 @@
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
+            "env-file": "/home/jte/development/EdgeSolution/modules/receivermodule/receivermodule.env",
             "settings": {
               "image": "${MODULES.receivermodule}",
               "createOptions": {
@@ -81,6 +82,14 @@
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
+            "env": {
+              "IOTEDGE_DEVICEID": {
+                "value": "simwsl2"
+              },
+              "IOTEDGE_MODULEID": {
+                "value": "sendermodule"
+              }
+            },
             "settings": {
               "image": "${MODULES.sendermodule}",
               "createOptions": {
